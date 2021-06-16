@@ -1,0 +1,7 @@
+---
+  - hosts: all
+    # 互信用户
+    user: applaud
+    tasks:
+      - name: ssh-copy
+        authorized_key: user=applaud key="{{ lookup('file', '/home/ap/ansible/.ssh/id_rsa.pub') }}"

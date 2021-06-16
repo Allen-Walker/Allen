@@ -1,0 +1,94 @@
+# 用户管理
+
+## 创建用户
+mkdir /home/ap
+useradd -d /home/ap/jrcs -m jrcs
+passwd jrcs
+ap@ccb0812（输入密码）
+chage -M 99995 jrcs（设置用户永久有效）
+
+## 添加互信
+修改 vim /etc/ansible/ansible.cfg
+host_key_checking = False
+生成密钥对
+ssh-keygen -t rsa
+拷贝到目标机器
+ssh-copy-id -i ~/.ssh/id_rsa.pub username@[ip,hostname]
+
+## 批量建立互信
+（1）方式1：
+新建 addApplaudSshPass.yml 文件
+---
+  - hosts: ap_applaud
+    # 互信用户
+    user: applaud
+    tasks:
+      - name: ssh-copy
+        authorized_key: user=applaud key="{{ lookup('file', '/home/ap/ansible/.ssh/id_rsa.pub') }}"
+
+ansible-playbook addApplaudSshPass.yml
+
+（2）方式2：
+ansible csy_ap -m authorized_key -a "user=applaud key='{{ lookup('file','/home/ap/ansible/.ssh/id_rsa.pub') }}'" -k  -i hosts_applaud
+
+取消互信
+ansible csy_ap -m authorized_key -a "user=applaud key='{{ lookup('file','/home/ap/ansible/.ssh/id_rsa.pub') }}' state=absent" -k  -i hosts_applaud
+
+## 批量添加用户
+（1）方式1
+新建 addUser.yml 文件
+---
+- name: Create User
+  hosts: ap_applaud
+  tasks:
+    - name:
+      user:
+        name: applaud
+        home: /home/ap/applaud
+        state: present
+
+（2）方式2
+ansible -m user -a "name=applaud home=/home/ap/applaud state=present" ap_applaud -i hosts
+
+## 批量添加用户
+删除 removeUser.yml 文件
+---
+- name: Create User
+  hosts: ap_applaud
+  user:
+    name: applaud
+    state: absent
+    remove: yes
+或者：
+ansible -m user -a "name=applaud state=absent remove=yes" ap_applaud -i hosts
+
+## 用户验证
+ansible ap_root -m shell -a "ls -lrt /home/ap" -i hosts 
+ansible ap_root -m shell -a "id applaud" -i hosts
+
+## 其他：
+ansible ap_root -m shell -a "mkdir -p /home/ap" -i hosts
+
+## 批量修改应用户密码
+（1）方式1——适用于更改多个固定的用户
+创建changeUsersPass.yml
+---
+  - hosts: ap_root
+    gather_facts: false
+    tasks:
+    - name: change user passwd
+      user: name={{ item.name }} password={{ item.chpass | password_hash('sha512') }} update_password=always
+      with_items:
+           - { name: 'root', chpass: '123456' }
+           - { name: 'applaud', chpass: 'applaud' }
+
+（2）方式2——更改单用户比较方便，从外面使用-e参数传递变量到playbook中
+创建changeUserPass.yml
+---
+  - hosts: ap_root
+    gather_facts: false
+    tasks:
+    - name: Change password
+      user: name={{ username }} password={{ chpass | password_hash('sha512') }} update_password=always
+
+ansible-playbook play1.yml -e "username=applaud chpass=applaud"

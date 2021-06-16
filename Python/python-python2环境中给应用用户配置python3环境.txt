@@ -1,0 +1,41 @@
+### 操作系统 
+### 在有python2的环境中给ansible用户单独配置python3
+
+### 获取最新python3的安装包
+wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tar.xz
+### 安装编译所需软件包
+yum -y install zlib-devel bzip2-devel openssl-devel sqlite-devel readline-devel libffi-devel gcc
+
+### 创建python用户和用户组
+useradd -d /home/ap/python -m python
+### 设置访问权限。用于应用用户反问python3
+chmod 755 /home/ap/python -R
+
+### 编译python3
+/home/ap/python
+mkdir python3
+tar -xvJf Python-3.8.3.tar.xz
+cd Python-3.8.3 
+./configure prefix=/home/ap/python/python3/
+sudo make && make install
+
+### 建立python3软链接
+ln -s /home/ap/python/python3/bin/python3.8 /home/ap/python/python3/bin/python
+ln -s /home/ap/python/python3/bin/pip3.8 /home/ap/python/python3/bin/pip
+
+### 给python用户和应用用户ansible配置python3环境
+vim .bash_profile
+export PATH=/home/ap/python/python3/bin:$PATH
+python -V
+pip -V
+
+### 切换到python用户，更新pip。注：python3和pip3安装软件都需要python用户来进行。
+pip install --upgrade pip
+
+### 查看pip下载包的路径
+pip show requests
+python -m site
+python -m site -help
+USER_BASE python 启动程序路径
+USER_SITE 依赖安装包基础路径
+site.py 配置文件，修改USER_SITE和USER_BASE

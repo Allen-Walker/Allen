@@ -1,0 +1,45 @@
+##################################################
+# 管理机到被管机器的文件拷贝
+##################################################
+ansible 机器组名 -m copy -a "src=xxx dest=xxx" -i host文件
+
+##################################################
+# 显示模块的帮助信息
+##################################################
+ansible-doc [options] [module...]
+-a：显示所有模块的文档
+-l，--list：列出全部可以模块
+-s，--snippet：显示指定模块的playbook片段
+--version：显示版本
+-v：显示简要的执行过程，-vv显示较为详细的过程，-vvv显示更为详细的执行过程
+--list-hosts：显示主机列表，可以简写 --list，实例 ansible 分组名 --list-hosts -i host文件
+
+##################################################
+# 查询hosts文件中的机器列表
+##################################################
+all：表示匹配所有定义在主机清单中的主机
+“*”：通配符，也可表示匹配所有主机清单中的主机 --- ansible "192.168.0.1*:192.168.0.2*" --list
+逻辑或 : --- ansible "192.168.0.1*:192.168.0.2*" --list
+逻辑与 & --- ansible "webs:&apps" --list
+逻辑非 ! --- ansible "webs:!apps" --list
+综合逻辑：逻辑非的优先级最好，其次是逻辑与，优先级最低是逻辑或
+
+##################################################
+# 查询hosts文件中的机器内置变量，并指定过滤器
+##################################################
+ansible 机器组名 -m setup -a "filter=ansible_hostname"
+
+##################################################
+# ansible批量更改主机名
+##################################################
+cd /etc/ansible/
+# hosts 文件
+[YQDAP]
+hostip hostname={newhostname} ansible_ssh_port=22 ansible_ssh_user=root ansible_ssh_pass=rootPasswd
+（例如：192.168.12.39 hostname=cfspjrcsap01 ansible_ssh_port=22 ansible_ssh_user=root ansible_ssh_pass=yqd@ccb0906）
+
+在堡垒机（主机，已安装配置ansible）中执行命令
+ansible YQDAP -m shell -a "echo {{hostname}} > /etc/hostname;reboot;" -i hosts
+
+
+

@@ -1,0 +1,6 @@
+---
+  - hosts: ap_root
+    gather_facts: false
+    tasks:
+    - name: Change password
+      user: name={{ username }} password={{ chpass | password_hash('sha512') }} update_password=always

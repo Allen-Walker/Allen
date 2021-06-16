@@ -1,0 +1,28 @@
+---
+- hosts: "{{ target }}"
+  gather_facts: false
+  
+  tasks:
+  - name: 参数校验
+    assert:
+      that:
+        - "luser is defined"
+        - "ruser is defined"
+      fail_msg: "usg: ansible-playbook ssh_keys.yml -e 'target=target_host luser=root ruser=root' -u root -k"
+
+  - name: Create user if not exists
+    user: name={{ luser }} shell=/bin/bash generate_ssh_key=yes
+    register: local
+    delegate_to: localhost
+  
+  - name: Ensure remote user exists
+    user: name={{ ruser }} shell=/bin/bash
+    register: remote
+
+  - name: Write key to authorized_keys
+    authorized_key:
+      user: "{{ ruser }}"
+      state: present
+      key: "{{ local.ssh_public_key }}"
+      manage_dir: yes
+

@@ -1,0 +1,58 @@
+# 基础
+## ansible 离线包安装
+环境信息
+# uname -a
+Linux localhost.localdomain 3.10.0-693.el7.x86_64 #1 SMP Tue Aug 22 21:09:27 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+# python -V
+Python 3.8.3
+
+rpm包安装
+rpm -i --force --nodeps +rpm_packages
+配置ansible
+host_key_checking = False
+log_path = /var/log/ansible.log
+[accelerate]
+accelerate_port = 5099 accelerate_port = 10000
+accelerate_timeout = 30
+accelerate_connect_timeout = 5.0
+accelerate_multi_key = yes
+
+## 配置文件优先级
+$ANSIBLE_CONFIG > ./ansible.cfg > ~/.ansible.cfg > /etc/ansible/ansible.cfg
+
+## ad hoc 语法
+ansible host-pattern -m module [-a ‘moudule args’] [-i inventory]
+
+## 基础命令
+ansible --version
+ansible-doc -l # 列出系统中已安装的模块列表
+ansible-doc ping # 列出系统中已安装的模块列表
+
+## yml 文件传参
+（1）定义命令行变量
+在release.yml文件里，hosts和user都定义为变量，需要从命令行传递变量值。
+---
+  - hosts: ‘{{ hosts }}’
+    remote_user: ‘{{ user }}’
+    tasks:
+    …
+
+在命令行里面传值得的方法： ansible-playbook release.yml --extra-vars "hosts=web user=root"
+
+（2）用json格式传递参数：
+ansible-playbook release.yml --extra-vars "{'hosts':'ap', 'user':'root'}" 
+
+（3）将参数放在文件里面：
+新建文件 vars.json，写入
+{'hosts':'ap', 'user':'root'}" 
+ansible-playbook release.yml --extra-vars "@vars.json"
+
+
+### Linux SSH登录服务器报ECDSA host key “ip地址“ for has changed and you have requested strict checking错误
+解决方案：
+ssh-keygen -R “你的远程服务器ip地址” 清除你当前机器里关于你的远程服务器的缓存和公钥信息
+
+原因分析：根据个人的情况，原因是我的云服务器重装了系统（清除了与我本地SSH连接协议相关信息），本地的SSH协议信息便失效了。SSH连接相同的ip地址时因有连接记录直接使用失效的协议信息去验证该ip服务器，所以会报错，使用上述命令便可以清除known_hosts里旧缓存文件。
+
+延伸：远程服务器的ssh服务被卸载重装或ssh相关数据（协议信息）被删除也会导致这个错误。
+https://blog.csdn.net/u012922706/article/details/109292712

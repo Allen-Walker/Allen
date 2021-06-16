@@ -1,0 +1,9 @@
+---
+- name: Create User
+  hosts: ap_applaud
+  tasks:
+    - name:
+      user:
+        name: applaud
+        home: /home/ap/applaud
+        state: present

@@ -1,0 +1,2 @@
+RTO - Recovery Time Objective 恢复时间目标
+RPO - Recovery Point Objective 复原点目标

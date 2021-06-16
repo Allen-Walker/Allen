@@ -1,0 +1,8 @@
+#!/bin/bash
+
+mkfs.ext3 /dev/vdb;
+### /somdata 为堡垒机日志记录的保存路径
+mkdir /somdata;
+mount /dev/vdb /somdata;
+echo "/dev/vdb /somdata ext3 defaults 0 0">>/etc/fstab;
+splat_mount.sh;

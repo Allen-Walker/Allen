@@ -1,0 +1,30 @@
+### 安装 samba 服务器
+yum list | grep samba
+yum -y install samba samba-common samba-client
+rpm -qa | grep samba
+
+### 删除
+rpm -e
+
+### 添加用户组方便管理
+groupadd samba
+### 配合 ansible 使用，方便管理的服务器
+usermod -a -G samba ansible
+smbpasswd -a ansible
+
+systemctl status/start/stop/restart smb
+chkconfig --level 35 smb on
+
+### 修改配置文件
+vim /etc/samba/smb.conf
+[global]
+workgroup = samba
+server string = Samba Server Version %vim
+
+[ansible]
+comment = Public stuff
+path = /home/ap/ansible
+public = yes
+writeable = yes
+browseable = yes
+guest ok = yes

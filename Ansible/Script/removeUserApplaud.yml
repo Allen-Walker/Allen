@@ -1,0 +1,7 @@
+---
+- name: Create User
+  hosts: ap_applaud
+  user:
+    name: applaud
+    state: absent
+    remove: yes

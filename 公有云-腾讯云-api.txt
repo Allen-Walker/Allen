@@ -1,0 +1,3 @@
+在线调试接口：
+https://console.cloud.tencent.com/api/explorer?Product=cvm&Version=2017-03-12&Action=DescribeZones&SignVersion=
+
