@@ -1,3 +1,0 @@
-#!/bin/bash
-### 建行云默认安装该版本
-yum -y install java-1.8.0-openjdk-devel.x86_64

@@ -1,6 +1,0 @@
-### 云堡垒机数据迁移到云盘 /somedata 挂载的是独立硬盘
-yblserv stop
-cp /baoleijidata /somedata/ -R
-ln -s /somedata/baoleijidata /baoleijidata
-yblserv start
-
