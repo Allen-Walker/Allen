@@ -1,0 +1,23 @@
+autoindex on;# 显示目录
+autoindex_exact_size on;# 显示文件大小
+autoindex_localtime on;# 显示文件时间
+
+# 如果有中文目录的话会出现乱码问题，所以还需要在下面添加这一句：
+charset utf-8,gbk;
+
+server {
+      listen     8080 default_server;
+      listen     [::]:8080 default_server;
+      root     /home/python/Allen/;
+       
+      location / {
+      }
+       
+      error_page 404 /404.html;
+            location = /40x.html {
+      }
+      
+      error_page 500 502 503 504 /50x.html;
+            location = /50x.html {
+     } 
+}

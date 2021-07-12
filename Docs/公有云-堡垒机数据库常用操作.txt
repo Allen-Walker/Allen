@@ -1,0 +1,29 @@
+#!/bin/bash
+### 登录堡垒机数据库
+mysql -uroot -p
+### 输入密码 Baidu1234567
+
+### 重置 Admin 账户用户默认密码 ybl@ccb0715
+use base;
+update tab4_user set password='12QQIDMNTF60FLI793CSB4JKMA' where user_id = 'A000000001';
+
+### 测试验证码服务器网络
+telnet yun.tim.qq.com 443
+
+### 不使用验证码登录
+use base;
+update tab4_sysconf set validcode =‘0’;
+
+### 修改手机号
+update tab4_user set telephone = ‘18618169796’ where user_id = ‘A000000001’;
+
+### 锁定用户
+use base;
+update tab4_user set actived = '1' where user_name = 'admin';
+
+
+
+
+
+
+

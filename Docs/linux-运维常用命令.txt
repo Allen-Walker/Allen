@@ -1,0 +1,18 @@
+### ps -eo pmem,pcpu,args | sort -k 1 -r | head -15
+
+### free
+$ free
+             total        used         free      shared   buffers   cached
+Mem:         16402432    16360492      41940        0     465404   12714880
+-/+ buffers/cache:        3180208   13222224
+Swap:        8193108        264      8192844
+我们解释下输出结果中每个选项的含义：
+首先是第一行：
+ total：物理内存的总大小。
+ used：已经使用的物理内存多小。
+ free：空闲的物理内存值。
+ shared：多个进程共享的内存值。
+ buffers/cached：磁盘缓存的大小。
+第二行Mem：代表物理内存使用情况。
+第三行(-/+ buffers/cached)：代表磁盘缓存使用状态。
+第四行：Swap表示交换空间内存使用状态。

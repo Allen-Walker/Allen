@@ -1,0 +1,32 @@
+### docker镜像导入导出
+docker save -o image.tar image-id
+docker load -i image.tar
+docker tag image-id repository:tag
+
+### docker 更改镜像默认存储路径
+docker info
+systemctl stop docker.service
+cp -R /var/lib/docker/ /data/docker/
+修改docker.service配置文件，在EXECStart的后面增加 --graph=/data/docker(修改后的docker存储路径)。
+vim /usr/lib/systemd/system/docker.service
+......
+ExecStart=/usr/bin/dockerd --graph=/data/docker
+......
+执行下列命令然后重启docker
+systemctl daemon-reload
+systemctl disable docker.service
+systemctl enable docker.service
+systemctl start docker.service
+
+vim /usr/lib/systemd/system/docker.service
+......
+ExecStart=/usr/bin/dockerd --graph=/data/docker
+......
+4. 执行下列命令然后重启docker
+
+systemctl daemon-reload
+systemctl disable docker.service
+systemctl enable docker.service
+systemctl start docker.service
+
+https://blog.51cto.com/5001660/2149599

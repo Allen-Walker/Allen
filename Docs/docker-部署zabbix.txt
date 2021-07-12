@@ -1,0 +1,137 @@
+## docker部署zabbix
+
+### 参考资料
+https://www.runoob.com/docker/centos-docker-install.html CentOS安装docker
+https://www.runoob.com/docker/docker-install-nginx.html docker安装nginx
+https://www.runoob.com/docker/docker-install-nginx.html 使用docker安装nginx
+https://blog.csdn.net/a314368439/article/details/101706011 使用docker部署zabbix
+https://www.zabbix.com/documentation/4.0/zh/manual zabbix官方部署手册
+https://www.cnblogs.com/yaun1498078591/p/10782229.html 使用docker部署zabbix（斌哥推荐）
+https://www.cnblogs.com/zhurong/p/9898675.html 解决caching_sha2_password问题
+https://www.cnblogs.com/zlslch/p/5937784.html 跳过授权配置skip-grant-tables
+https://blog.csdn.net/shenhaiwen/article/details/74252685?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-3.not_use_machine_learn_pai&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-3.not_use_machine_learn_pai windows 防火墙出入站配置
+https://blog.csdn.net/wolf131721/article/details/93004013 mysql8.0设置root密码与授权
+
+### 部署数据库
+mkdir -p /var/mysql/data
+chmod -R 775 /var/mysql/data
+
+docker run --name zabbix-mysql --hostname zabbix-mysql \
+-p 33060:3306 \
+-v /var/mysql/data:/var/lib/mysql \
+-e MYSQL_ROOT_PASSWORD=zab7@ZvT \
+-d mysql \
+--character-set-server=utf8 --collation-server=utf8_bin
+
+### 部署java网关，用于监控jvm
+docker run --name zabbix-java-gateway --hostname zabbix-java-gateway \
+-d zabbix/zabbix-java-gateway
+
+### 部署zabbix
+mkdir -p /var/zabbix/data
+chmod -R 775 /var/zabbix/data
+
+docker run --name zabbix-server --hostname zabbix-server \
+--link zabbix-mysql:mysql \
+-e DB_SERVER_HOST="zabbix-mysql" \
+-e DB_SERVER_PORT="3306" \
+-e MYSQL_DATABASE="zabbix" \
+-e MYSQL_USER="zabbix" \
+-e MYSQL_PASSWORD="zab7@ZvT" \
+-v /var/zabbix/data:/usr/lib/zabbix \
+-p 10051:10051 \
+-d zabbix/zabbix-server-mysql
+
+其他参数
+--link zabbix-java-gateway:zabbix-java-gateway \
+-e ZBX_JAVAGATEWAY="zabbix-java-gateway" \
+
+### 获取zabbix的数据表结构，导入数据结构，配置授权访问
+docker cp zabbix-server:/usr/share/doc/zabbix-server-mysql/create.sql.gz ./
+zcat create.sql.gz > create.sql
+
+docker cp ./create.sql zabbix-mysql:/opt/app-root/src
+docker exec -it zabbix-mysql bash
+cd /var
+mysql -h host -u root -p 输入zab7@ZvT
+create user 'zabbix'@'%' identified by 'zab7@ZvT';
+create database zabbix;
+grant all privileges on zabbix.* to 'zabbix'@'%' identified by 'zab7@ZvT';
+grant all on zabbix.* to 'zabbix'@'%';
+use zabbix;
+source create.sql;
+
+### 授权问题
+set password=password('zab7@ZvT');
+
+SELECT user,host FROM mysql.user;
+SELECT * FROM mysql.user WHERE user='root'\G
+
+grant all privileges on *.* to 'root'@'%' identified by 'zab7@ZvT';（报42000）
+grant all privileges on *.* to 'root'@'%';
+flush privileges;
+
+Delete FROM mysql.user Where User='zabbix' and Host='%';
+drop database zabbix;
+flush privileges;
+
+修改账户密码加密规则并更新用户密码
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'zab7@ZvT' PASSWORD EXPIRE NEVER;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'zab7@ZvT';
+ALTER USER 'root'@'%' IDENTIFIED BY 'zab7@ZvT' PASSWORD EXPIRE NEVER;
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'zab7@ZvT';
+ALTER USER 'zabbix'@'%' IDENTIFIED BY 'zab7@ZvT' PASSWORD EXPIRE NEVER;
+ALTER USER 'zabbix'@'%' IDENTIFIED WITH mysql_native_password BY 'zab7@ZvT';
+注：mysql8 之前的版本中加密规则是mysql_native_password,而在mysql8之后,加密规则是caching_sha2_password, 解决问题方法有两种,一种是升级navicat驱动,一种是把mysql用户登录密码加密规则还原成mysql_native_password. 
+
+单独重置密码
+alter user 'root'@'%' identified by 'zab7@ZvT';
+
+跳过授权
+[mysqld]
+skip-grant-tables
+
+### 
+docker run --name zabbix-web \
+--link zabbix-mysql:mysql \
+--link zabbix-server:zabbix/zabbix-server-mysql \
+-e DB_SERVER_HOST="zabbix-mysql" \
+-e DB_SERVER_PORT="3306" \
+-e MYSQL_USER="zabbix" \
+-e MYSQL_PASSWORD="zab7@ZvT" \
+-e MYSQL_DATABASE="zabbix" \
+-e ZBX_SERVER_HOST="zabbix-server" \
+-p 8443:8443 \
+-d zabbix/zabbix-web-nginx-mysql
+
+### docker 部署 zabbix-agent
+docker run --name zabbix-agent \
+--link zabbix-server:zabbix/zabbix-server-mysql \
+-e ZBX_HOSTNAME="zabbix-server" \
+-e ZBX_SERVER_HOST="zabbix-server" \
+-v /etc/localtime:/etc/localtime \
+-p 10050:10050 \
+-d zabbix/zabbix-agent
+
+### rpm 部署zabbix-agent
+下载地址 http://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/
+
+### 部署zabbix-proxy
+https://www.cnblogs.com/sunshine-long/p/10731250.html
+https://blog.csdn.net/qq_24601199/article/details/102971886
+https://blog.csdn.net/qq_24601199/article/details/102971952
+
+sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config && setenforce 0 && systemctl stop firewalld
+
+
+
+### windows 端口查询
+netstat -ano
+netstat -aon|findstr "3000"
+禁用端口
+taskkill /pid 2812 /F
+tasklist | findstr "3000"
+
+### windows 防火墙打开端口
+控制面板—防火墙—高级设置—高级设置—出站规则—最右边 新建规则“新建出站规则向导”，在向导的第一步，选择要创建的防火墙规则类型，选择第二个“端口”。
+

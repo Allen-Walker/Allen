@@ -1,0 +1,15 @@
+### 设置tab替换为两个空格
+1、使用vim编辑器输入tab时，自动替换为4个空格
+在.vimrc文件中加入如下语句：
+:set nu            " 设置行号
+:set tabstop=2     " tabstop 表示一个 tab 显示出来是多少个空格的长度，默认8
+:set softtabstop=2 " softtabstop 表示在编辑模式的时候按退格键的时候退回缩进的长度，当使用 expandtab 时特别有用
+:set expandtab     " 当设置成 expandtab 时，缩进用空格来表示，noexpandtab 则是用制表符表示一个缩进
+:set autoindent    " 自动缩进
+:set cindent       " 自动缩进补充
+:set shiftwidth=2  " 自动缩进空白字符个数
+
+2、替换文本中已存在的Tab为空格
+注意：先在.vimrc中插入第一步骤中的语句
+底行模式下输入如下命令：
+:%retab
