@@ -1,0 +1,35 @@
+参考：https://www.cnblogs.com/biangdang/p/7754527.html
+
+python_pydiction.vim  -- Vim plugin that autocompletes Python code.
+complete-dict         -- Dictionary file of Python keywords, modules, etc.
+pydiction.py          -- Python script to add more words to complete-dict.
+
+下载Pydiction
+mkdir ~/.vim
+mkdir ~/.vim/bundle
+cd ~/.vim/bundle
+git clone https://github.com/rkulla/pydiction.git
+cp -r ~/.vim/bundle/pydiction/after/ ~/.vim
+vim ~/.vimrc
+
+# 添加如下内容
+filetype plugin on
+let g:pydiction_location = '~/.vim/bundle/pydiction/complete-dict'
+let g:pydiction_menu_height = 3
+
+
+-------------------------------------------------------------------------------------------------------------
+set nu            " 设置显示行号
+set tabstop=2     " tabstop 表示一个 tab 显示出来是多少个空格的长度，默认8
+set softtabstop=2 " softtabstop 表示在编辑模式的时候按退格键的时候退回缩进的长度，当使用 expandtab 时特别有用
+set expandtab     " 当设置成 expandtab 时，缩进用空格来表示，noexpandtab 则是用制表符表示一个缩进
+set autoindent    " 自动缩进
+set cindent       " 自动缩进补充
+set shiftwidth=2  " 自动缩进空白字符个数
+:%retab
+
+" pydiction 配置
+filetype plugin on
+let g:pydiction_location = '~/.vim/bundle/pydiction/complete-dict'
+let g:pydiction_menu_height = 3
+-------------------------------------------------------------------------------------------------------------

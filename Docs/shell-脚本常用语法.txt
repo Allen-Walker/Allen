@@ -3,13 +3,20 @@ ${string/substring/replacement} 仅仅替换第一次匹配
 ${string//substring/replacement} 替换所有的匹配
 注：substring不是正则式，*跟shell中的*类似
 
+
+### Linux tr 命令用于转换或删除文件中的字符。tr 指令从标准输入设备读取数据，经过字符串转译后，将结果输出到标准输出设备。
+tr [-cdst][--help][--version][第一字符集][第二字符集]  
+tr [OPTION]…SET1[SET2] 
+
 ### sed 将/替换为\/
 echo “/data/data” | sed 's/\/\\\//g'
+
 
 ### 匹配删除整行
 sed -i '/string/'d log.log
 
-### sed 基础
+
+### sed
 sed [-hnV][-e<script>][-f<script文件>][文本文件]
 参数说明：
 -e<script>或--expression=<script> 以选项中指定的script来处理输入的文本文件。
@@ -25,12 +32,146 @@ i ：插入， i 的后面可以接字串，而这些字串会在新的一行出
 p ：打印，亦即将某个选择的数据印出。通常 p 会与参数 sed -n 一起运行～
 s ：取代，可以直接进行取代的工作哩！通常这个 s 的动作可以搭配正规表示法！例如 1,20s/old/new/g 就是啦！
 
+
 ### 匹配删除整行
 sed -i '/string/'d log.log
 
+
 ### shell高级变量
-${arr[*]}把参数打散,作为一个字符串整体传递,原有参数结构被破坏.aabbcc
+${arr[*]}把参数打散,作为一个字符串整体传递,原有参数结构被破坏。aabbcc
 ${arr[@]}保持了原参数结构。aa bb cc
+### shell获取文件名和后缀
+
+
+file=”thisfile.txt”
+echo "filename: ${file%.*}"
+echo "extension: ${file##*.}" 
+
+
+### Shell获取正在执行脚本的绝对路径
+function get_ss_exec_dir(){
+  BASE_PATH=$(cd `dirname $0`;pwd)
+  echo "base_path is $BASE_PATH"
+}
+或者
+function get_ss_exec_dir(){
+  DIR_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+  echo "dir_path is $DIR_PATH"
+}
+# 解决符号链接问题
+function get_ss_exec_dir(){
+  SOURCE="${BASH_SOURCE[0]}"
+  while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+    DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+  done
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null && pwd )"
+  echo ${DIR}
+}
+
+
+### 软链接的作用是，
+1. 节省复制造成的空间浪费
+2. 保证两个文件的内容同时修改
+软链文件
+ln -s 文件名 别名
+软链文件夹
+ln -s -F 文件夹/ 别名
+删除软连接
+unlink 别名
+或
+rm -rf 别名
+
+
+### Shell下多行字符串的变量定义
+直接输出到文件
+纯文本, 文本当中没有任何变量
+# use '>' 表示清除原文件,并进行追加操作, use '>>' 表示追加操作
+FILE="~/www.txt"
+cat > ${FILE} <<- EOF
+www.qq.com
+www.google.com
+EOF
+# or
+cat > ${FILE} <<- 'EOF'
+www.qq.com
+www.google.com
+EOF
+
+文本当中带有变量
+qq="www.qq.com"
+google="www.google.com"
+VAR='~/var.txt'
+cat > ${VAR} <<- EOF
+${qq}
+${google}
+EOF
+# or
+cat > ${VAR} <<- 'EOF'
+${qq}
+${google}
+EOF
+注意: 上面两个文件的内容是不一样的, 对于第一种方式, 会将变量全部解析, 如果变量未定义, 则使用 "" 替换变量, 对于方式二, 不会解析变量, 直接是纯文本的方式写入.
+
+输出到变量中, 即为变量赋值
+read 的方式
+read -r -d '' var <<- EOF
+this is line 1
+this is line 2
+EOF
+# or
+read -r -d '' var <<- 'EOF'
+this is line 1
+this is line 2
+EOF
+注意：使用 EOF 和 'EOF' 的区别和上面的区别是一样的.
+
+cat 的方式
+var=$(cat <<- EOF
+this is line 1
+this is line 2
+EOF
+)
+# or
+var=$(cat <<- 'EOF'
+this is line 1
+this is line 2
+EOF
+)
+注意：使用 EOF 和 'EOF' 的区别和上面的区别是一样的.
+
+
+### Shell 文件包含
+. filename   # 注意点号(.)和文件名中间有一空格
+或
+source filename
+
+
+### shell用户交互
+read [-rs] [-a ARRAY] [-d delim] [-n nchars] [-N nchars] [-p prompt] [-t timeout] [var1 var2 var3......]
+
+
+### Shell 互信查看日志
+CloudService.properties
+--------------------------------------------------
+USERNAME='allen'
+PASSWORD='123456'
+ERVER_ADDRS=$(cat <<- 'EOF'
+nastestap04:128.192.161.58:22
+nastestweb04:128.192.161.55:22
+nastestweb03:128.192.161.54:22
+EOF
+)
+--------------------------------------------------
+
+hx.sh
+--------------------------------------------------
+. $SCRIPT_DIR/CloudService.properties
+
+--------------------------------------------------
+
+
 
 
 

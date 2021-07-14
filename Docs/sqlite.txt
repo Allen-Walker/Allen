@@ -1,0 +1,14 @@
+sqlite3
+
+.help
+
+sqlite3 DatabaseName.db
+.open test.db
+.databases
+.quit
+sqlite3 testDB.db .dump > testDB.sql
+sqlite3 testDB.db < testDB.sql
+ATTACH DATABASE 'testDB.db' as 'TEST';
+
+
+

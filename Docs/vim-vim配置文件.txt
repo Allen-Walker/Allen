@@ -9,7 +9,25 @@
 :set cindent       " 自动缩进补充
 :set shiftwidth=2  " 自动缩进空白字符个数
 
+
 2、替换文本中已存在的Tab为空格
 注意：先在.vimrc中插入第一步骤中的语句
 底行模式下输入如下命令：
 :%retab
+
+
+3、vim tabnew
+对于vim这个 ide来说, 单纯的用 多子窗口 来操作, 感觉还是不够的, 还要结合标签页tab pages来,才能更好的操作.
+所有关于标签 的 命令行 命令都是 以 :tab开始的, 可以用tab键来查看提示
+直接的再 普通模式下的 切换标签页 的命令是 gt, gT: go tab
+:tabnew 新建标签
+:tabc 关闭标签, :tabo 关闭其他所有标签 tab other closed
+关于切换
+:tabfirst 切换到第一个标签
+:tablast 切换到最后一个标签
+:tabp = tab previous
+:tabn = tab next
+查看标签
+:tabs tab show, 或者 tab的复数: tabs
+:tabe: tab edit : 在标签页中 打开 文件.
+

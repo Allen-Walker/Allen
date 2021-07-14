@@ -1,0 +1,28 @@
+id,ip,function,else
+1,173.16.116.29,none,Windows运维
+2,173.16.116.156,none,外联WEB001
+3,173.16.116.166,yuexinqian,外联WEB002
+4,173.16.116.103,none,mangoDB001
+5,173.16.116.241,none,zookeeper001
+6,173.16.116.252,none,memcache/redis001
+7,173.16.116.188,html,fastdfs001/nginx
+8,173.16.116.31,none,fastdfs002
+9,173.16.116.230,chs.war shs.war pract.wa zghy,计算集群001
+10,173.16.116.10,chs.war shs.war pract.wa zghy,计算集群002
+11,173.16.116.128,c-n-shm-chcg-1.0.0.jar c-n-shm-lpb-1.0.0.jar c-n-shm-xmsc-1.0.0.jar c-n-shm-zsbc-1.0.0.jar dyba,计算集群003
+12,173.16.116.2,c-n-shm-chcg-1.0.0.jar c-n-shm-lpb-1.0.0.jar c-n-shm-xmsc-1.0.0.jar c-n-shm-zsbc-1.0.0.jar dyba,计算集群004
+13,173.16.116.44,SalBank.jar SaleFunds.jar TradingBank.jar,计算集群005
+14,173.16.116.183,fx.workflow.war wf.war,计算集群006
+15,173.16.116.214,cas.war ccs.war config.war eps.war bserv.war,计算集群007
+16,173.16.116.242,cas.war ccs.war config.war eps.war bserv.war,计算集群008
+17,173.16.116.179,htm.war api.war dubbo.war,计算集群009
+18,173.16.116.233,pdf cad htm.war api.war dubbo.war cht,计算集群010
+19,173.16.116.243,erinterface erinterface-yangjiang c-n-shm-fm-0.0.1.jar c-n-shm-hyjd-0.0.1.jar APPROP sms,计算集群011
+20,173.16.116.190,erinterface erinterface-yangjiang c-n-shm-fm-0.0.1.jar c-n-shm-hyjd-0.0.1.jar sms,计算集群012
+21,173.16.116.83,statis.war WebReport,计算集群013
+22,173.16.116.62,数据库,计算集群014
+23,173.16.116.32,cms.war app,计算集群015
+24,173.16.116.151,cht gis usc zfront(资金监管前置),计算集群016
+25,173.46.116.146,none,互联WEB001
+26,173.46.116.117,none,互联WEB002
+27,10.0.2.15,none,lijunxi

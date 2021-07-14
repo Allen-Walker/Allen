@@ -1,0 +1,7 @@
+ALLEN_BASE=/home/ap/python/Allen
+alias cdal="cd ${ALLEN_BASE}; ls -lrt"
+alias cdan="cd ${ALLEN_BASE}/Ansible; ls -lrt"
+alias cddoc="cd ${ALLEN_BASE}/Docs; ls -lrt"
+alias cdpy="cd ${ALLEN_BASE}/Python; ls -lrt"
+alias cdpydoc="cd ${ALLEN_BASE}/Python/Docs; ls -lrt"
+
